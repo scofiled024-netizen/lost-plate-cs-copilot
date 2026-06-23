@@ -6,7 +6,7 @@ Hi [Name],
 
 I applied for the Customer Service Specialist role and built a **Guest Ops Copilot** based on your actual workflow:
 
-**Demo:** [YOUR-LINK-HERE]
+**Demo:** https://scofiled024-netizen.github.io/lost-plate-cs-copilot/
 
 It covers email replies (paste guest email → auto-detect intents → warm English draft), batch daily reminders with weather, guide WeChat/WhatsApp formatting, and an interactive ops board with one-click upsell follow-ups.
 
