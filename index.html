@@ -15,7 +15,7 @@
     <div class="nav-inner">
       <div class="nav-brand">
         <span class="wordmark">Lost Plate</span>
-        <span class="nav-tagline">Guest Ops Copilot</span>
+        <span class="nav-tagline" data-i18n="nav_tagline">Guest Ops Copilot</span>
       </div>
       <div class="nav-right">
         <nav class="nav-pills" role="tablist">
@@ -23,7 +23,6 @@
           <button class="nav-pill" data-panel="panel-reminders" data-i18n="tab_reminders" role="tab">Reminders</button>
           <button class="nav-pill" data-panel="panel-guide" data-i18n="tab_guide" role="tab">Guide</button>
           <button class="nav-pill" data-panel="panel-ops" data-i18n="tab_ops" role="tab">Ops</button>
-          <button class="nav-pill" data-panel="panel-memo" data-i18n="tab_memo" role="tab">Memo</button>
         </nav>
         <div id="lang-switch" class="lang-switch">
           <button type="button" data-lang="en" class="active">EN</button>
@@ -36,7 +35,7 @@
   <!-- Hero band -->
   <section class="hero">
     <h1 data-i18n="title">Lost Plate Guest Ops Copilot</h1>
-    <p class="hero-sub" data-i18n="subtitle">Email · Reminders · Guide · Ops · Memo</p>
+    <p class="hero-sub" data-i18n="subtitle">Email · Reminders · Guide · Ops</p>
     <p class="disclaimer" data-i18n="disclaimer">Demo built independently — not affiliated with Lost Plate Food Tours</p>
   </section>
 
@@ -117,29 +116,6 @@
       <div class="card">
         <h2 data-i18n="ops_title">Today's priorities</h2>
         <div id="bookings-list"></div>
-      </div>
-    </section>
-
-    <section id="panel-memo" class="panel">
-      <div class="card">
-        <h2 data-i18n="memo_title">First 30 Days — Process improvements</h2>
-        <div class="memo-section">
-          <h3 data-i18n="memo_h1">1. Template library + AI reply assistant</h3>
-          <p data-i18n="memo_p1">Email Reply tab indexes templates by intent.</p>
-        </div>
-        <div class="memo-section">
-          <h3 data-i18n="memo_h2">2. Daily 9am ops checklist</h3>
-          <ul>
-            <li data-i18n="memo_li1">Batch tomorrow's reminders</li>
-            <li data-i18n="memo_li2">Flag solo-traveler bookings</li>
-            <li data-i18n="memo_li3">Sync guide notes</li>
-            <li data-i18n="memo_li4">Clear follow-up queue</li>
-          </ul>
-        </div>
-        <div class="memo-section">
-          <h3 data-i18n="memo_h3">3. Multi-day upsell trigger</h3>
-          <p data-i18n="memo_p3">Auto-suggest multi-day trips after city tour booking.</p>
-        </div>
       </div>
     </section>
   </main>

@@ -10,7 +10,6 @@ A lightweight demo for guest operations workflows: email replies, daily reminder
 - **Daily Reminders** — mock tomorrow's bookings with weather → batch reminder drafts
 - **Guide Comms** — format updates for WeChat, WhatsApp, and Rezdy notes
 - **Ops Board** — priority queue with Mark Done and one-click upsell follow-ups
-- **First 30 Days** — process improvement memo for onboarding
 - **Eng / 中** — UI language toggle (guest reply drafts stay English)
 
 ## Run locally
