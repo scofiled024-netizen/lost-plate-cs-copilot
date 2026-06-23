@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lost Plate Guest Ops Copilot v2.1</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <div id="lang-switch" class="lang-switch">
+        <button type="button" data-lang="en" class="active">EN</button>
+        <button type="button" data-lang="zh">中</button>
+      </div>
+    </div>
+    <h1 data-i18n="title">Lost Plate Guest Ops Copilot</h1>
+    <p data-i18n="subtitle">Email replies · daily reminders · guide comms · ops board</p>
+    <p class="disclaimer" data-i18n="disclaimer">Demo built independently — not affiliated with Lost Plate Food Tours</p>
+    <div class="api-key-bar">
+      <button type="button" id="api-key-toggle" class="btn btn-secondary btn-sm" data-i18n="api_key_toggle">OpenRouter API key (session only)</button>
+      <div id="api-key-panel" class="hidden">
+        <input id="api-key" type="password" data-i18n-placeholder="api_key_ph" placeholder="sk-or-v1-…" autocomplete="off" />
+        <p class="hint" data-i18n="api_key_hint">Key stays in this browser tab only.</p>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-panel="panel-email" data-i18n="tab_email">Email Reply</button>
+    <button data-panel="panel-reminders" data-i18n="tab_reminders">Daily Reminders</button>
+    <button data-panel="panel-guide" data-i18n="tab_guide">Guide Comms</button>
+    <button data-panel="panel-ops" data-i18n="tab_ops">Ops Board</button>
+    <button data-panel="panel-memo" data-i18n="tab_memo">First 30 Days</button>
+  </nav>
+
+  <main>
+    <section id="panel-email" class="panel active">
+      <div class="grid-3">
+        <div class="card">
+          <h2><span data-i18n="email_guest_title">Guest email</span> <span class="ai-badge" data-i18n="badge_paste">paste</span></h2>
+          <textarea id="guest-email" class="tall" data-i18n-placeholder="guest_email_ph" placeholder="Paste the guest's English email here…"></textarea>
+        </div>
+        <div class="card">
+          <h2><span data-i18n="email_intents_title">Intents</span> <span class="ai-badge" data-i18n="badge_autodetect">auto-detect</span></h2>
+          <div id="intent-list" class="intent-list"></div>
+          <button type="button" id="email-generate-btn" class="btn btn-primary" data-i18n="btn_generate_reply">Generate Reply</button>
+          <p id="email-status" class="status-line"></p>
+        </div>
+        <div class="card">
+          <h2 data-i18n="email_draft_title">Reply draft</h2>
+          <div id="email-draft-output" class="draft-output"></div>
+          <button type="button" id="email-copy-btn" class="btn btn-secondary" data-i18n="btn_copy">Copy to clipboard</button>
+          <h3 class="subhead" data-i18n="checklist_title">Human edit checklist</h3>
+          <ul id="email-checklist" class="checklist"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-reminders" class="panel">
+      <div class="card">
+        <h2><span data-i18n="reminders_title">Tomorrow's tours</span> <span class="ai-badge" data-i18n="badge_mock">mock sheet</span></h2>
+        <p class="hint" data-i18n="reminders_hint">Production: Rezdy export or Google Sheet.</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th data-i18n="th_guest">Guest</th>
+                <th data-i18n="th_tour">Tour</th>
+                <th data-i18n="th_city">City</th>
+                <th data-i18n="th_time">Time</th>
+                <th data-i18n="th_dietary">Dietary</th>
+                <th data-i18n="th_guide">Guide</th>
+              </tr>
+            </thead>
+            <tbody id="reminder-table-body"></tbody>
+          </table>
+        </div>
+        <button type="button" id="reminder-generate-btn" class="btn btn-primary" data-i18n="btn_generate_reminders">Generate all reminders</button>
+        <p id="reminder-status" class="status-line"></p>
+      </div>
+      <div id="reminder-drafts"></div>
+    </section>
+
+    <section id="panel-guide" class="panel">
+      <div class="grid-2">
+        <div class="card">
+          <h2 data-i18n="guide_update_title">Guide update</h2>
+          <label for="guide-city" data-i18n="label_city">City</label>
+          <select id="guide-city"></select>
+          <label for="guide-name" data-i18n="label_guide">Guide</label>
+          <select id="guide-name"></select>
+          <label for="guide-tour-time" data-i18n="label_tour_time">Tour time</label>
+          <input id="guide-tour-time" type="text" value="7:00 PM" />
+          <label for="guide-update" data-i18n="label_english_update">English update</label>
+          <textarea id="guide-update" class="tall"></textarea>
+          <button type="button" id="guide-generate-btn" class="btn btn-primary" data-i18n="btn_refresh_formats">Refresh formats</button>
+        </div>
+        <div class="card">
+          <h2><span data-i18n="guide_wechat">WeChat</span> <button type="button" id="guide-copy-wechat" class="btn btn-secondary btn-sm" data-i18n="btn_copy">Copy</button></h2>
+          <pre id="guide-wechat-output" class="draft-output"></pre>
+          <h2 class="subhead"><span data-i18n="guide_whatsapp">WhatsApp</span> <button type="button" id="guide-copy-whatsapp" class="btn btn-secondary btn-sm" data-i18n="btn_copy">Copy</button></h2>
+          <pre id="guide-whatsapp-output" class="draft-output"></pre>
+          <h2 class="subhead"><span data-i18n="guide_rezdy">Rezdy note</span> <button type="button" id="guide-copy-rezdy" class="btn btn-secondary btn-sm" data-i18n="btn_copy">Copy</button></h2>
+          <pre id="guide-rezdy-output" class="draft-output short"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-ops" class="panel">
+      <div class="ops-summary">
+        <div class="stat"><div class="num" id="stat-tours">0</div><div class="lbl" data-i18n="stat_tours">Tours today</div></div>
+        <div class="stat"><div class="num" id="stat-reminders">0</div><div class="lbl" data-i18n="stat_reminders">Reminders</div></div>
+        <div class="stat"><div class="num" id="stat-solo">0</div><div class="lbl" data-i18n="stat_solo">Solo alerts</div></div>
+        <div class="stat"><div class="num" id="stat-followups">0</div><div class="lbl" data-i18n="stat_followups">Follow-ups</div></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="ops_title">Today's priorities</h2>
+        <div id="bookings-list"></div>
+      </div>
+    </section>
+
+    <section id="panel-memo" class="panel">
+      <div class="card">
+        <h2 data-i18n="memo_title">First 30 Days — Process improvements</h2>
+        <div class="memo-section">
+          <h3 data-i18n="memo_h1">1. Template library + AI reply assistant</h3>
+          <p data-i18n="memo_p1">Email Reply tab indexes templates by intent.</p>
+        </div>
+        <div class="memo-section">
+          <h3 data-i18n="memo_h2">2. Daily 9am ops checklist</h3>
+          <ul>
+            <li data-i18n="memo_li1">Batch tomorrow's reminders</li>
+            <li data-i18n="memo_li2">Flag solo-traveler bookings</li>
+            <li data-i18n="memo_li3">Sync guide notes</li>
+            <li data-i18n="memo_li4">Clear follow-up queue</li>
+          </ul>
+        </div>
+        <div class="memo-section">
+          <h3 data-i18n="memo_h3">3. Multi-day upsell trigger</h3>
+          <p data-i18n="memo_p3">Auto-suggest multi-day trips after city tour booking.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
