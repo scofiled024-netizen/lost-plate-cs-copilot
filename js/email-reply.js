@@ -1,7 +1,8 @@
 import { INQUIRY_TYPES, CITIES, TOURS } from "./data.js";
-import { fillTemplate, getCutoffDescription, copyText, getApiKey, switchTab, $, $$ } from "./utils.js";
+import { fillTemplate, getCutoffDescription, copyText, getApiKey, formatEmailForCopy, $, $$ } from "./utils.js";
 import { chatCompletion, LOST_PLATE_SYSTEM } from "./openrouter.js";
 import { t, INTENT_LABEL_KEYS, onLangChange } from "./i18n.js";
+import { openModal, closeModal } from "./modal.js";
 
 export const INTENT_OPTIONS = [
   { id: "last-minute" },
@@ -161,7 +162,6 @@ export function onGuestEmailInput() {
 }
 
 export function loadUpsellContext({ emailText }) {
-  switchTab("panel-email");
   const ta = $("#guest-email");
   if (ta && emailText) ta.value = emailText;
   renderIntentCheckboxes(new Set(["multi-day"]));
@@ -169,7 +169,8 @@ export function loadUpsellContext({ emailText }) {
   $$(".intent-cb").forEach((cb) => {
     cb.checked = cb.value === "multi-day";
   });
-  $("#email-generate-btn")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  // Scroll the intents column into view
+  $("#intent-list")?.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 export async function generateEmailReply() {
@@ -177,8 +178,6 @@ export async function generateEmailReply() {
   const intentIds = getSelectedIntentIds();
   const entities = extractEntities(emailText);
   const statusEl = $("#email-status");
-  const outputEl = $("#email-draft-output");
-  const checklistEl = $("#email-checklist");
   const btn = $("#email-generate-btn");
 
   if (!emailText) {
@@ -212,28 +211,75 @@ export async function generateEmailReply() {
     }
   }
 
-  outputEl.textContent = draft;
-  checklistEl.innerHTML = templateResult.checklist.map((item) => `<li>${fillTemplate(item, entities)}</li>`).join("");
-  if (source === "openrouter") statusEl.textContent = t("status_ready_ai");
-  else if (source === "template") statusEl.textContent = t("status_ready_tpl");
-  else statusEl.textContent = t("status_ready_fallback");
-
+  // Open modal with draft instead of writing inline
   btn.disabled = false;
+
+  let sourceLabel = "";
+  if (source === "openrouter") sourceLabel = t("status_ready_ai");
+  else if (source === "template") sourceLabel = t("status_ready_tpl");
+  else sourceLabel = t("status_ready_fallback");
+  statusEl.textContent = sourceLabel;
+
+  openEmailDraftModal({ draft, checklist: templateResult.checklist, entities });
+}
+
+function openEmailDraftModal({ draft, checklist, entities }) {
+  const checklistHtml = checklist.length
+    ? `<ul class="modal-checklist">${checklist.map((item) => `<li>${fillTemplate(item, entities)}</li>`).join("")}</ul>`
+    : "";
+
+  const bodyHtml = `
+    <div class="modal-draft" id="modal-draft-body">${escapeHtml(draft)}</div>
+    <h3 class="subhead" data-i18n="checklist_title">${t("checklist_title")}</h3>
+    ${checklistHtml}
+  `;
+
+  const footerHtml = `
+    <button type="button" class="btn btn-primary" id="modal-copy-btn" data-i18n="modal_copy">一键复制 / Copy email</button>
+  `;
+
+  openModal({
+    title: t("modal_title"),
+    bodyHtml,
+    footerHtml,
+    onClose: () => {
+      const statusEl = $("#email-status");
+      if (statusEl) statusEl.textContent = "";
+    },
+  });
+
+  // Wire copy button after modal is in DOM
+  setTimeout(() => {
+    const copyBtn = $("#modal-copy-btn");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", () => {
+        const draftEl = $("#modal-draft-body");
+        if (draftEl) {
+          const plainText = formatEmailForCopy(draftEl.textContent || draftEl.innerText || "");
+          copyText(plainText, t("toast_copied"));
+        }
+      });
+    }
+  }, 0);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 export function initEmailReply() {
   renderIntentCheckboxes();
   $("#guest-email")?.addEventListener("input", onGuestEmailInput);
   $("#email-generate-btn")?.addEventListener("click", generateEmailReply);
-  $("#email-copy-btn")?.addEventListener("click", () => {
-    copyText($("#email-draft-output")?.textContent || "", t("toast_copied"));
-  });
 
   onLangChange(() => {
     const detected = detectIntents($("#guest-email")?.value || "");
     renderIntentCheckboxes(detected);
   });
 
+  // Default example email
   $("#guest-email").value = `Hi,
 
 I'm traveling solo to Chengdu next week and would love to join the evening food tour on July 12. I'm vegetarian — is that okay?

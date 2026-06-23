@@ -21,16 +21,19 @@ export function showToast(message) {
 }
 
 export function switchTab(panelId) {
-  $$(".tabs button").forEach((btn) => {
+  $$(".nav-pill, .tabs button").forEach((btn) => {
     const active = btn.dataset.panel === panelId;
     btn.classList.toggle("active", active);
+    if (btn.hasAttribute("aria-selected")) {
+      btn.setAttribute("aria-selected", active ? "true" : "false");
+    }
   });
   $$(".panel").forEach((p) => p.classList.remove("active"));
   $(`#${panelId}`)?.classList.add("active");
 }
 
 export function initTabs() {
-  $$(".tabs button").forEach((btn) => {
+  $$(".nav-pill, .tabs button").forEach((btn) => {
     btn.addEventListener("click", () => switchTab(btn.dataset.panel));
   });
 }
@@ -50,15 +53,11 @@ export function setApiKey(key) {
   else sessionStorage.removeItem(API_KEY_STORAGE);
 }
 
-export function initApiKeyField() {
-  const input = $("#api-key");
-  const toggle = $("#api-key-toggle");
-  if (!input) return;
-  input.value = getApiKey();
-  input.addEventListener("change", () => setApiKey(input.value));
-  input.addEventListener("input", () => setApiKey(input.value));
-  toggle?.addEventListener("click", () => {
-    const panel = $("#api-key-panel");
-    panel?.classList.toggle("hidden");
-  });
+export function formatEmailForCopy(text) {
+  if (!text) return "";
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "$1")        // strip markdown bold
+    .replace(/\n{3,}/g, "\n\n")              // normalize line breaks
+    .replace(/^\s+|\s+$/gm, "")              // trim each line
+    .trim();
 }
